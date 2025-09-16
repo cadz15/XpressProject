@@ -1,11 +1,7 @@
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head } from "@inertiajs/react";
-import { useEcho } from "@laravel/echo-react";
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { Head } from '@inertiajs/react';
 
 export default function Dashboard() {
-    useEcho("notification", ".test.notification", (e) => {
-        console.log(e.message);
-    });
     return (
         <AuthenticatedLayout
             header={

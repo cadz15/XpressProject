@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\User;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -13,6 +14,19 @@ use Inertia\Response;
 
 class ProfileController extends Controller
 {
+      /**
+     * Show a user's public profile (restricted to subscribers).
+     */
+    public function show($username)
+    {
+        $user = User::where('username', $username)->firstOrFail();
+
+        return inertia('Profiles/Show', [
+            'user' => $user,
+            'auctions' => $user->auctions()->latest()->take(5)->get(),
+        ]);
+    }
+    
     /**
      * Display the user's profile form.
      */

@@ -158,7 +158,7 @@ class StripeWebhookController extends Controller
                         'reason' => "Purchased token bundle #{$bundle->id} with {$bundle->tokens} tokens via Stripe",
                     ]);
 
-                    event(new StripePayment($user, $paymentIntentId, 'paymennt', 'success', 'Successful Token payment'));
+                    event(new StripePayment($user, $paymentIntentId, 'payment', 'success', 'Successful Token payment'));
         
                 }
 

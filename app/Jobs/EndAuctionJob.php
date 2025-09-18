@@ -31,23 +31,23 @@ class EndAuctionJob implements ShouldQueue
         // Reload fresh auction data
         $auction = Auction::find($this->auction->id);
 
-        if (!$auction || $auction->ended) {
+        if (!$auction || $auction->status == 'ended') {
             return; // already ended
         }
+        $winner = optional($auction->bids->orderByDesc('amount')->orderBy('created_at')->first())->user;
 
-        $auction->ended = true;
+        $auction->status = 'ended';
+        $auction->winner_id = $winner->id;
         $auction->save();
 
         // Broadcast event
         broadcast(new AuctionEnded($auction));
 
         // Notify seller and winner if exists
-        if ($auction->highestBid) {
-            $winner = $auction->highestBid->user;
-            $seller = $auction->seller;
+        $seller = $auction->seller;
 
-            $winner->notify(new \App\Notifications\AuctionWonNotification($auction));
-            $seller->notify(new \App\Notifications\AuctionEndedNotification($auction));
-        }
+
+        $winner->notify(new \App\Notifications\AuctionWonNotification($auction));
+        $seller->notify(new \App\Notifications\AuctionEndedNotification($auction));
     }
 }

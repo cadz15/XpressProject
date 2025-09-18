@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useForm, usePage } from "@inertiajs/react";
+import { Head, useForm, usePage } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
@@ -13,25 +13,83 @@ import {
     SelectValue,
 } from "@/Components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/Components/ui/alert-dialog";
 import { AlertCircle, Upload, X } from "lucide-react";
 import { Alert, AlertDescription } from "@/Components/ui/alert";
 
 export default function Create() {
     const { categories } = usePage().props;
 
+    const [dateErrors, setDateErrors] = useState({
+        start_time: "",
+        end_time: "",
+    });
+
+    const [showFileSizeAlert, setShowFileSizeAlert] = useState(false);
+    const [showTokenAlert, setShowTokenAlert] = useState(false);
+
     const { data, setData, post, processing, errors } = useForm({
         title: "",
         description: "",
         starting_price: "",
-        duration_hours: 24,
+        start_time: "",
+        end_time: "",
         category_id: "",
         images: [],
     });
 
     const [preview, setPreview] = useState([]);
 
+    const currentDate = new Date();
+    currentDate.setHours(currentDate.getHours() + 1); // Add 1 hour to current time
+    const minDateTime = currentDate.toISOString().slice(0, 16); // Format as YYYY-MM-DDTHH:MM
+
+    const validateDates = (start_time, end_time) => {
+        let errors = {};
+
+        if (start_time && end_time) {
+            if (new Date(start_time) >= new Date(end_time)) {
+                errors.end_time = "End time must be after the start time";
+            }
+        }
+
+        if (new Date(start_time) <= new Date()) {
+            errors.start_time =
+                "Start time must be at least 1 hour in the future";
+        }
+
+        setDateErrors(errors);
+    };
+
+    const handleStartChange = (e) => {
+        setData({ ...data, start_time: e.target.value });
+        validateDates(e.target.value, data.end_time);
+    };
+
+    const handleEndChange = (e) => {
+        setData({ ...data, end_time: e.target.value });
+        validateDates(data.start_time, e.target.value);
+    };
+
     const handleFileChange = (e) => {
+        const maxSize = 2;
         const files = Array.from(e.target.files);
+        const tooLargeFiles = files.filter(
+            (file) => file.size > maxSize * 1024 * 1024
+        );
+
+        if (tooLargeFiles.length > 0) {
+            setShowFileSizeAlert(true);
+            return;
+        }
         setData("images", files);
 
         // Create preview URLs
@@ -56,7 +114,7 @@ export default function Create() {
             onSuccess: (response) => {},
             onError: (error) => {
                 if (error[0] === "You need at least 1 tokens.") {
-                    alert("You need at least 1 tokens.");
+                    setShowTokenAlert(true);
                 }
             },
         });
@@ -64,6 +122,7 @@ export default function Create() {
 
     return (
         <AuthenticatedLayout>
+            <Head title="Create Auction" />
             <div className="flex justify-center">
                 <div className="container max-w-2xl py-6">
                     <Card>
@@ -157,35 +216,58 @@ export default function Create() {
                                         </p>
                                     )}
                                 </div>
+                                <div className="flex flex-col gap-4 md:flex-row md:gap-2">
+                                    {/* Start Date */}
+                                    <div className="space-y-2 w-full">
+                                        <Label htmlFor="start_time">
+                                            Start Date
+                                        </Label>
+                                        <Input
+                                            id="start_time"
+                                            type="datetime-local"
+                                            value={data.start_time}
+                                            onChange={handleStartChange}
+                                            className={
+                                                errors.start_time
+                                                    ? "border-destructive"
+                                                    : ""
+                                            }
+                                            min={minDateTime} // Ensure the start time is at least 1 hour from now
+                                        />
+                                        {(errors.start_time ||
+                                            dateErrors.start_time) && (
+                                            <p className="text-sm text-destructive">
+                                                {errors.start_time ??
+                                                    dateErrors.start_time}
+                                            </p>
+                                        )}
+                                    </div>
 
-                                {/* Duration */}
-                                <div className="space-y-2">
-                                    <Label htmlFor="duration_hours">
-                                        Duration (hours)
-                                    </Label>
-                                    <Input
-                                        id="duration_hours"
-                                        type="number"
-                                        value={data.duration_hours}
-                                        onChange={(e) =>
-                                            setData(
-                                                "duration_hours",
-                                                e.target.value
-                                            )
-                                        }
-                                        className={
-                                            errors.duration_hours
-                                                ? "border-destructive"
-                                                : ""
-                                        }
-                                        min="1"
-                                        max="168"
-                                    />
-                                    {errors.duration_hours && (
-                                        <p className="text-sm text-destructive">
-                                            {errors.duration_hours}
-                                        </p>
-                                    )}
+                                    {/* End Date */}
+                                    <div className="space-y-2 w-full">
+                                        <Label htmlFor="end_time">
+                                            End Date
+                                        </Label>
+                                        <Input
+                                            id="end_time"
+                                            type="datetime-local"
+                                            value={data.end_time}
+                                            onChange={handleEndChange}
+                                            className={
+                                                errors.end_time
+                                                    ? "border-destructive"
+                                                    : ""
+                                            }
+                                            min={minDateTime} // Ensure the end time is at least 1 hour from now
+                                        />
+                                        {(errors.end_time ||
+                                            dateErrors.end_time) && (
+                                            <p className="text-sm text-destructive">
+                                                {errors.end_time ??
+                                                    dateErrors.end_time}
+                                            </p>
+                                        )}
+                                    </div>
                                 </div>
 
                                 {/* Category */}
@@ -244,7 +326,7 @@ export default function Create() {
                                                     or drag and drop
                                                 </p>
                                                 <p className="text-xs text-muted-foreground">
-                                                    PNG, JPG (MAX. 10MB each)
+                                                    PNG, JPG (MAX. 2MB each)
                                                 </p>
                                             </div>
                                             <Input
@@ -324,6 +406,47 @@ export default function Create() {
                     </Card>
                 </div>
             </div>
+
+            {/* File Size Alert Dialog */}
+            <AlertDialog
+                open={showFileSizeAlert}
+                onOpenChange={setShowFileSizeAlert}
+            >
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="flex items-center gap-2">
+                            <AlertCircle className="h-5 w-5 text-destructive" />
+                            File Too Large
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Each image must be less than 2MB. Please select
+                            smaller files.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogAction>OK</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            {/* Token Alert Dialog */}
+            <AlertDialog open={showTokenAlert} onOpenChange={setShowTokenAlert}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="flex items-center gap-2">
+                            <AlertCircle className="h-5 w-5 text-destructive" />
+                            Insufficient Tokens
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                            You need at least 1 token to create an auction.
+                            Please purchase tokens first.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogAction>OK</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </AuthenticatedLayout>
     );
 }

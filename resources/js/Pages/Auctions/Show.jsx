@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { router, useForm, usePage } from "@inertiajs/react";
+import { Head, router, useForm, usePage } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { useEcho } from "@laravel/echo-react";
 import { Button } from "@/Components/ui/button";
@@ -42,7 +42,7 @@ export default function Show() {
     const [errorMessage, setErrorMessage] = useState("");
 
     const { data, setData, post, processing, errors } = useForm({
-        amount: auction.current_price + 1,
+        amount: Math.round(auction.current_price) + 1,
     });
 
     const images = auction.images || [];
@@ -117,6 +117,10 @@ export default function Show() {
         });
     };
 
+    const handleReloadPage = () => {
+        window.location.reload();
+    };
+
     const handleEndAuction = () => {
         console.log("End of Auction");
     };
@@ -141,6 +145,7 @@ export default function Show() {
 
     return (
         <AuthenticatedLayout>
+            <Head title={auction.title} />
             <div className="flex justify-center">
                 <div className="container max-w-6xl py-6 space-y-6">
                     {/* Header Section */}
@@ -158,10 +163,7 @@ export default function Show() {
                                 </Badge>
                                 <div className="flex items-center text-muted-foreground text-sm">
                                     <Clock className="h-4 w-4 mr-1" />
-                                    Ends:{" "}
-                                    {new Date(
-                                        auction.end_time
-                                    ).toLocaleString()}
+                                    Ends: {formatDate(auction.end_time)}
                                 </div>
                             </div>
                         </div>
@@ -329,8 +331,10 @@ export default function Show() {
                                                     />
                                                     <p className="text-sm text-muted-foreground">
                                                         Enter $
-                                                        {currentPrice + 1} or
-                                                        more
+                                                        {Math.round(
+                                                            currentPrice
+                                                        ) + 1}{" "}
+                                                        or more
                                                     </p>
                                                 </div>
                                                 <Button
@@ -376,7 +380,11 @@ export default function Show() {
                                 </CardContent>
                             </Card>
                             {/* Auction Timer */}
-                            <AuctionTimer serverEndTime={auction.end_time} />
+                            {auction.status !== "pending" && (
+                                <AuctionTimer
+                                    serverEndTime={auction.end_time}
+                                />
+                            )}
                             {/* Auction Details Card */}
                             <Card>
                                 <CardHeader>
@@ -407,6 +415,17 @@ export default function Show() {
                                             ${currentPrice}
                                         </span>
                                     </div>
+                                    {auction.status === "pending" && (
+                                        <div className="flex justify-between">
+                                            <span className="text-muted-foreground">
+                                                Start Time
+                                            </span>
+                                            <span className="font-medium flex items-center">
+                                                <Calendar className="h-4 w-4 mr-1" />
+                                                {formatDate(auction.start_time)}
+                                            </span>
+                                        </div>
+                                    )}
                                     <div className="flex justify-between">
                                         <span className="text-muted-foreground">
                                             End Time
@@ -483,7 +502,9 @@ export default function Show() {
                                 </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                                <AlertDialogAction>OK</AlertDialogAction>
+                                <AlertDialogAction onClick={handleReloadPage}>
+                                    OK
+                                </AlertDialogAction>
                             </AlertDialogFooter>
                         </AlertDialogContent>
                     </AlertDialog>

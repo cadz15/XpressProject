@@ -90,10 +90,22 @@ class AuctionController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'description' => 'required|string',
             'starting_price' => 'required|numeric|min:1',
-            'duration_hours' => 'required|integer|min:1',
+            'start_time' => [
+                'required',
+                'date',
+                'date_format:Y-m-d\TH:i', // Format for datetime-local input
+                'after_or_equal:' . now()->addHour()->toDateTimeString(), // Start time should be at least 1 hour from now
+            ],
+            'end_time' => [
+                'required',
+                'date',
+                'date_format:Y-m-d\TH:i',
+                'after:start_time', // End time must be after start time
+            ],
             'category_id' => 'required|exists:categories,id',
+            'images' => 'required|array', 
             'images.*' => 'image|max:2048',
         ]);
 

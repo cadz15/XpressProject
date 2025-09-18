@@ -22,13 +22,14 @@ class ChatController extends Controller
      */
     public function show(Auction $auction)
     {
-        $this->authorizeChat($auction);
+        // $this->authorizeChat($auction);
 
-        $messages = $auction->messages()->with('user')->latest()->paginate(20);
-
-        return inertia('Chat/Show', [
+        $conversation = $auction->conversations()->with('messages', 'seller', 'buyer')->latest()->first();
+        
+        return inertia('Conversations/Show', [
             'auction'  => $auction,
-            'messages' => $messages,
+            'conversation' => $conversation,
+            'user' => Auth::user()
         ]);
     }
 

@@ -24,8 +24,8 @@ class AuctionService
         }
 
         return DB::transaction(function () use ($seller, $data, $tokenRequired) {
-            $startTime = now();
-            $endTime = now()->addHours(intval($data['duration_hours']));
+            $startTime = Carbon::parse($data['start_time']);
+            $endTime = Carbon::parse($data['end_time']);
 
             $seller->decrement('token_balance', $tokenRequired);
             $seller->tokenLedger()->create([
@@ -33,6 +33,13 @@ class AuctionService
                 'balance' => $seller->token_balance,
                 'reason' => 'Created an auction.'
             ]);
+
+            $status = 'ended';
+            if($startTime > now() && now() < $endTime) {
+                $status = 'pending';
+            }else if($startTime <= now() && now() < $endTime) {
+                $status = 'live';
+            }
             
             $auction = $seller->auctions()->create([
                 'seller_id'   => $seller->id,
@@ -44,7 +51,7 @@ class AuctionService
                 'bid_increment_pct' => 5.00, // default
                 'start_time' => $startTime,
                 'end_time' => $endTime,
-                'status' => 'live',
+                'status' => $status,
             ]);
 
             // Handle images if present in $data

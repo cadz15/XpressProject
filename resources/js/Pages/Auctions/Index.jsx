@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, usePage, router } from "@inertiajs/react";
+import { Link, usePage, router, Head } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
@@ -103,6 +103,7 @@ export default function Index() {
 
     return (
         <AuthenticatedLayout>
+            <Head title="Auctions" />
             <div className="flex justify-center">
                 <div className="container py-6 space-y-6">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">

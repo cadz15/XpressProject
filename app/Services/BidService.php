@@ -34,7 +34,7 @@ class BidService
             }
 
             // ✅ Ensure amount is higher than current highest
-            $highestBid = $auction->bids()->max('amount');
+            $highestBid = $auction->current_price;
             if ($highestBid !== null && $amount <= $highestBid) {
                 throw new \Exception('Your bid must be higher than the current highest bid.');
             }

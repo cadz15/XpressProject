@@ -43,7 +43,7 @@ class BidController extends Controller
         $validated = $request->validate([
             'amount' => ['required', 'numeric', 'min:0'],
         ]);
-
+        
         try {
             $bid = $this->service->placeBid(
                 $request->user(),

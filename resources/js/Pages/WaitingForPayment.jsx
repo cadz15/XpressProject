@@ -41,7 +41,6 @@ const WaitingForPayment = ({ subscriptionId }) => {
     // });
 
     useEcho(`payment-status.${user.id}`, ".payment.status.updated", (e) => {
-        console.log("Payment status update:", e);
         if (e.forEvent === "payment") {
             setRedirectLink(route("tokens.index"));
         }
@@ -53,17 +52,17 @@ const WaitingForPayment = ({ subscriptionId }) => {
     });
 
     const handleRetry = () => {
-        router.replace(redirectLink);
+        router.visit(redirectLink);
     };
 
     const handleClose = () => {
-        router.replace(redirectLink);
+        router.visit(redirectLink);
     };
 
     useEffect(() => {
         if (status === "success") {
             setTimeout(() => {
-                router.replace(redirectLink);
+                router.visit(redirectLink);
             }, 3000);
         }
     }, [status]);

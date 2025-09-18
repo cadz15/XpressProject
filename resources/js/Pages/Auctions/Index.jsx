@@ -38,8 +38,6 @@ export default function Index() {
     const [category, setCategory] = useState(filters?.category || "all");
     const [viewMode, setViewMode] = useState("grid"); // 'grid' or 'list'
 
-    console.log(auctions);
-
     const handleSearch = (e) => {
         e.preventDefault();
         router.get(

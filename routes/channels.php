@@ -35,7 +35,7 @@ Broadcast::channel('auction.{auctionId}', function ($user, $auctionId) {
         return true;
     }
 
-    if ($auction->seller_id === $user->id) {
+    if ($auction->user_id == $user->id) {
         Log::info("User ID {$user->id} is seller — authorized");
         return true;
     }

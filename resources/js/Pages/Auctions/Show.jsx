@@ -95,7 +95,6 @@ export default function Show() {
         post(`/auctions/${auction.id}/bids`, {
             preserveScroll: true,
             onSuccess: (res) => {
-                console.log("Bid successful", res);
                 setCurrentPrice(data.amount);
                 setData("amount", parseFloat(data.amount) + 1);
             },
@@ -125,16 +124,9 @@ export default function Show() {
         console.log("End of Auction");
     };
 
-    useEcho("chat", "MessageSent", (e) => {
+    useEcho(`auction.${auction.id}`, ".bid.placed", (e) => {
         console.log(e);
     });
-
-    useEffect(() => {
-        // Echo implementation would go here
-        return () => {
-            // Cleanup
-        };
-    }, [auction.id, auth?.user?.id]);
 
     const statusVariant =
         {

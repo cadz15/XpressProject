@@ -32,11 +32,7 @@ class AuctionController extends Controller
     public function index(Request $request)
     {
         $query = Auction::with('seller.profile', 'category', 'images')
-            ->withCount('participants')
-            ->where(function($subQuery) {
-                $subQuery->where('status', 'live')
-                ->orWhere('user_id', Auth::user()->id);
-            });
+            ->withCount('participants');
 
         if ($request->filled('status')) {
             if($request->input('status') != "all") {
@@ -44,7 +40,7 @@ class AuctionController extends Controller
             }
         }
 
-        if ($request->filled('category')) {
+        if ($request->filled('category') && $request->input('category') != 'all') {
             $category = Category::where('name', $request->input('category'))->first();
             //get all childs category
             $categoryIds = $category->children()->pluck('id');

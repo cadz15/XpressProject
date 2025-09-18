@@ -4,23 +4,26 @@ namespace App\Jobs;
 
 use App\Models\Auction;
 use App\Events\AuctionEnded;
+use App\Models\Bid;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class EndAuctionJob implements ShouldQueue
 {
-    use InteractsWithQueue, Queueable, SerializesModels;
+    use InteractsWithQueue, Queueable, SerializesModels, Dispatchable;
 
-    protected $auction;
+    protected $auctionId;
 
     /**
      * Create a new job instance.
      */
-    public function __construct(Auction $auction)
+    public function __construct(int $auction)
     {
-        $this->auction = $auction;
+        $this->auctionId = $auction;
     }
 
     /**
@@ -29,22 +32,38 @@ class EndAuctionJob implements ShouldQueue
     public function handle(): void
     {
         // Reload fresh auction data
-        $auction = Auction::find($this->auction->id);
+        $auction = Auction::find($this->auctionId);
+        Log::info("Auction Id {$auction->id} update to ended.");
 
         if (!$auction || $auction->status == 'ended') {
             return; // already ended
         }
-        $winner = optional($auction->bids->orderByDesc('amount')->orderBy('created_at')->first())->user;
 
-        $auction->status = 'ended';
-        $auction->winner_id = $winner->id;
-        $auction->save();
+        try {
+            //code...
+            $winner = Bid::where('auction_id', $this->auctionId)->latest('amount')->oldest('created_at')->first();
+            
+            if(!$winner) {
+                return; // no winner
+            }
 
-        // Broadcast event
+            Log::info("Auction Id {$auction->id} update to ended with winner {$winner->user_id}.");
+
+            $auction->update([
+                'status' => 'ended',
+                'winner_id' => $winner->user_id
+            ]);
+
+        } catch (\Throwable $th) {
+            Log::error('Error here', ['errror' => $th->getMessage()]);
+        }
+
+
+        // // Broadcast event
         broadcast(new AuctionEnded($auction));
 
-        // Notify seller and winner if exists
-        $seller = $auction->seller;
+        // // Notify seller and winner if exists
+        $seller = $auction->user_id;
 
 
         $winner->notify(new \App\Notifications\AuctionWonNotification($auction));

@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\Auction;
 use App\Models\User;
 use App\Events\AuctionEnded;
+use App\Jobs\EndAuctionJob;
+use App\Jobs\StartAuctionJob;
 use App\Models\AuctionTokenSetting;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -70,6 +72,9 @@ class AuctionService
                     }
                 }
             }
+
+            StartAuctionJob::dispatch($auction->id)->delay($auction->start_time);
+            EndAuctionJob::dispatch($auction->id)->delay($auction->end_time);
 
             return $auction;
         });

@@ -15,6 +15,8 @@ use App\Http\Controllers\Admin\TokenBundleController;
 use App\Http\Controllers\Admin\SubscriptionPlanController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ProfileController;
+use App\Jobs\EndAuctionJob;
+use App\Models\Auction;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Pusher\Pusher;
@@ -78,14 +80,16 @@ Route::middleware(['auth'])->group(function () {
         ]);
     })->name('waiting.payment');
 
-    // Route::get('/test-notification', function() {
-    //     event(new \App\Events\TestNotification('This is testing data'));
-    // });
-
     Route::get('/test-notification', function() {
-        $user = Auth::user();
-        event(new StripePayment($user, 1111, 'payment', 'failed', 'Payment Failed'));
+        $auction = Auction::first();
+            EndAuctionJob::dispatch($auction->id);
+        // event(new \App\Events\TestNotification('This is testing data'));
     });
+
+    // Route::get('/test-notification', function() {
+    //     $user = Auth::user();
+    //     event(new StripePayment($user, 1111, 'payment', 'failed', 'Payment Failed'));
+    // });
 
     Route::get('/file/{id}', [AuctionController::class, 'getFile'])->name('get.file');
     Route::get('/subscription', [SubscriptionController::class, 'index'])->name('subscription.index');

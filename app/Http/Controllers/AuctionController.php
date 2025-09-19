@@ -52,7 +52,7 @@ class AuctionController extends Controller
             $query->where('title', 'like', '%' . $request->input('search') . '%');
         }
 
-        $auctions = $query->orderBy('end_time')->paginate(20);
+        $auctions = $query->latest('end_time')->paginate(20);
 
         return inertia('Auctions/Index', [
             'auctions' => $auctions,
@@ -92,7 +92,7 @@ class AuctionController extends Controller
                 'required',
                 'date',
                 'date_format:Y-m-d\TH:i', // Format for datetime-local input
-                'after_or_equal:' . now()->addHour()->toDateTimeString(), // Start time should be at least 1 hour from now
+              
             ],
             'end_time' => [
                 'required',
@@ -164,6 +164,8 @@ class AuctionController extends Controller
 
     public function update(Request $request, Auction $auction)
     {
+        $this->authorize('update', $auction);
+
         if ($auction->status === 'live') {
             return back()->withErrors(['error' => 'Ongoing auctions cannot be edited.']);
         }
@@ -183,6 +185,8 @@ class AuctionController extends Controller
 
     public function destroy(Auction $auction)
     {
+        $this->authorize('update', $auction);
+        
         if ($auction->status === 'live') {
             return back()->withErrors(['error' => 'Ongoing auctions cannot be deleted.']);
         }
@@ -212,8 +216,8 @@ class AuctionController extends Controller
     public function myAuction()
     {
         $userId = Auth::user()->id;
-        $auctions = Auction::where('user_id', $userId)->with('images')->withCount('participants')->paginate(15);
-        $participatedAuctions = UserParticipatedAuction::where('user_id', $userId)->with('auction', 'auction.images')->paginate(15);
+        $auctions = Auction::where('user_id', $userId)->with('images', 'winner')->withCount('participants')->paginate(15);
+        $participatedAuctions = UserParticipatedAuction::where('user_id', $userId)->with( 'auction', 'auction.images')->paginate(15);
 
         return Inertia::render('Auctions/MyAuctions', [
             'auctions' => $auctions,

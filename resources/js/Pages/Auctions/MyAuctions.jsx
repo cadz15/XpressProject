@@ -1,5 +1,5 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { usePage, Link, router } from "@inertiajs/react";
+import { usePage, Link, router, Head } from "@inertiajs/react";
 import React from "react";
 import { Button } from "@/Components/ui/button";
 import {
@@ -40,15 +40,15 @@ import { formatDate } from "@/lib/utils";
 function MyAuctions() {
     const { auctions, participatedAuctions, auth } = usePage().props;
     const user = auth.user;
-    console.log(auctions);
 
     const getStatusBadge = (auction) => {
-        let variant, text, icon;
+        let variant, text, icon, bgColor;
         switch (auction.status) {
             case "live":
                 variant = "default";
                 text = "Live";
                 icon = <Play className="h-3 w-3 mr-1" />;
+                bgColor = "bg-blue-700 hover:bg-blue-700/50";
                 break;
             case "ended":
                 variant =
@@ -60,24 +60,31 @@ function MyAuctions() {
                     ) : (
                         <XCircle className="h-3 w-3 mr-1" />
                     );
+                bgColor =
+                    auction.winner_id !== user.id
+                        ? "bg-red-400 hover:bg-red-400/50"
+                        : "bg-green-400 hover:bg-green-400/50";
                 break;
-            case "scheduled":
+            case "pending":
                 variant = "secondary";
-                text = "Scheduled";
+                text = "Pending";
                 icon = <Clock className="h-3 w-3 mr-1" />;
+                bgColor = "";
                 break;
             case "completed":
                 variant = "outline";
                 text = "Completed";
                 icon = <CheckCircle className="h-3 w-3 mr-1" />;
+                bgColor = "";
                 break;
             default:
                 variant = "outline";
                 text = auction.status;
                 icon = null;
+                bgColor = "";
         }
         return (
-            <Badge variant={variant} className="flex items-center">
+            <Badge variant={variant} className={`flex items-center ${bgColor}`}>
                 {icon}
                 {text}
             </Badge>
@@ -102,6 +109,7 @@ function MyAuctions() {
 
     return (
         <AuthenticatedLayout>
+            <Head title="My Auctions" />
             <div className="container max-w-6xl py-8 space-y-8">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -240,20 +248,20 @@ function MyAuctions() {
                                                                 <Trophy className="h-4 w-4 text-amber-500" />
                                                                 <span className="text-muted-foreground">
                                                                     Winner:{" "}
-                                                                    {auctionObj.winner_id ===
-                                                                    user.id
-                                                                        ? "You"
-                                                                        : "Another bidder"}
+                                                                    {
+                                                                        auctionObj
+                                                                            .winner
+                                                                            ?.name
+                                                                    }
                                                                 </span>
                                                             </div>
                                                         )}
                                                 </div>
                                             </CardContent>
-                                            <CardFooter>
+                                            <CardFooter className="flex flex-row gap-2">
                                                 <Button
                                                     asChild
                                                     className="w-full"
-                                                    variant="outline"
                                                 >
                                                     <Link
                                                         href={route(
@@ -265,6 +273,24 @@ function MyAuctions() {
                                                         View Auction
                                                     </Link>
                                                 </Button>
+                                                {auction.winner_id && (
+                                                    <Button
+                                                        asChild
+                                                        variant="outline"
+                                                        className="w-full"
+                                                    >
+                                                        <Link
+                                                            href={route(
+                                                                "chat.show",
+                                                                auction.id
+                                                            )}
+                                                        >
+                                                            <MessageSquare className="h-4 w-4 mr-2" />
+                                                            Start Chat with
+                                                            Winner
+                                                        </Link>
+                                                    </Button>
+                                                )}
                                             </CardFooter>
                                         </Card>
                                     );
@@ -436,7 +462,7 @@ function MyAuctions() {
                                                         )}
                                                     </div>
                                                 </CardContent>
-                                                <CardFooter className="flex flex-col gap-2">
+                                                <CardFooter className="flex flex-row gap-2">
                                                     <Button
                                                         asChild
                                                         className="w-full"
@@ -459,7 +485,10 @@ function MyAuctions() {
                                                             className="w-full"
                                                         >
                                                             <Link
-                                                                href={`/chat/${auction.id}`}
+                                                                href={route(
+                                                                    "chat.show",
+                                                                    auction.id
+                                                                )}
                                                             >
                                                                 <MessageSquare className="h-4 w-4 mr-2" />
                                                                 Start Chat with

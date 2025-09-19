@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Auction;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 
 class AuctionPolicy
 {
@@ -12,7 +13,7 @@ class AuctionPolicy
      */
     public function update(User $user, Auction $auction): bool
     {
-        return $user->id === $auction->seller_id || $user->is_admin;
+        return $user->id === $auction->user_id || $user->is_admin;
     }
 
     /**
@@ -20,6 +21,13 @@ class AuctionPolicy
      */
     public function bid(User $user, Auction $auction): bool
     {
-        return $auction->status === 'live' && $user->subscribed();
+        return $auction->status === 'live' && $user->isSubscribed();
+    }
+
+    public function chat(User $user, Auction $auction): bool
+    {
+        if(!$auction->winner_id) return false;
+        
+        return $auction->user_id == $user->id || $auction->winner_id == $user->id;
     }
 }

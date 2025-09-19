@@ -266,6 +266,12 @@ export default function Index() {
                                                     variant={getStatusBadgeVariant(
                                                         auction.status
                                                     )}
+                                                    className={
+                                                        auction.status ===
+                                                        "live"
+                                                            ? "bg-blue-700 hover:bg-blue-700/80"
+                                                            : ""
+                                                    }
                                                 >
                                                     {auction.status.toUpperCase()}
                                                 </Badge>

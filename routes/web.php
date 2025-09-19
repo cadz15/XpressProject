@@ -56,7 +56,7 @@ Route::middleware(['auth', 'active.subscriber'])->group(function () {
 
     // Chat (winner ↔ seller)
     Route::get('/auctions/{auction}/chat', [ChatController::class, 'show'])->name('chat.show');
-    Route::post('/auctions/{auction}/chat', [ChatController::class, 'store'])->name('chat.store');
+    Route::post('/auctions/{conversation}/chat', [ChatController::class, 'store'])->name('chat.store');
 
     // Tokens
     Route::get('/tokens', [TokenController::class, 'index'])->name('tokens.index');

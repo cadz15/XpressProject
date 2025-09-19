@@ -27,6 +27,9 @@ import {
     AlertCircle,
     Gavel,
     Users,
+    MessageCircle,
+    TimerOff,
+    Trophy,
 } from "lucide-react";
 import AuctionTimer from "@/Components/AuctionTimer";
 import { formatDate } from "@/lib/utils";
@@ -39,6 +42,7 @@ export default function Show() {
     const [showBidAlert, setShowBidAlert] = useState(false);
     const [bidAlertMessage, setBidAlertMessage] = useState("");
     const [showErrorDialog, setShowErrorDialog] = useState(false);
+    const [showForceEndDialog, setShowForceEndDialog] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
     const { data, setData, post, processing, errors } = useForm({
@@ -63,13 +67,16 @@ export default function Show() {
         post(`/auctions/${auction.id}/participate`, {
             preserveScroll: true,
             onSuccess: () => {
-                console.log("Participation successful");
                 setShowParticipateDialog(false);
             },
             onError: (error) => {
                 setShowParticipateDialog(false);
-                if (error[0] === "You need at least 1 tokens.") {
-                    setErrorMessage(error[0]);
+                if (error[0].includes("You need at least")) {
+                    setErrorMessage(`${error[0].replace(
+                        ".",
+                        ""
+                    )} to create an auction. Please purchase
+                            tokens first.`);
                     setShowErrorDialog(true);
                 } else {
                     setErrorMessage(
@@ -111,7 +118,6 @@ export default function Show() {
                     );
                     setShowErrorDialog(true);
                 }
-                console.error(error);
             },
         });
     };
@@ -120,12 +126,32 @@ export default function Show() {
         window.location.reload();
     };
 
-    const handleEndAuction = () => {
-        console.log("End of Auction");
+    const handleForceEnd = () => {
+        setShowForceEndDialog(true);
+    };
+
+    const handleForceEndAuction = () => {
+        post(`/auctions/${auction.id}/force-end`, {
+            preserveScroll: true,
+            onSuccess: (res) => {
+                console.log(res);
+            },
+            onError: (error) => {
+                console.log(error);
+            },
+        });
+    };
+
+    const handleOpenChat = () => {
+        router.visit(route("chat.show", auction.id));
     };
 
     useEcho(`auction.${auction.id}`, ".bid.placed", (e) => {
-        console.log(e);
+        setCurrentPrice(e.bid.amount);
+    });
+
+    useEcho(`auction.${auction.id}`, ".auction.ended", (e) => {
+        handleReloadPage();
     });
 
     const statusVariant =
@@ -149,7 +175,11 @@ export default function Show() {
                             <div className="flex items-center gap-2 mt-2">
                                 <Badge
                                     variant={statusVariant}
-                                    className="text-sm"
+                                    className={
+                                        auction.status === "live"
+                                            ? `text-sm bg-blue-700 hover:bg-blue-700/80`
+                                            : "text-sm"
+                                    }
                                 >
                                     {auction.status.toUpperCase()}
                                 </Badge>
@@ -182,6 +212,52 @@ export default function Show() {
                                 )}
                             </div>
                         )}
+
+                        {auction.status === "live" && isOwner && (
+                            <Button
+                                onClick={handleForceEnd}
+                                disabled={processing}
+                                className="bg-red-600 hover:bg-red-600/90"
+                            >
+                                <TimerOff className="h-4 w-4 mr-2" />
+                                Force End
+                            </Button>
+                        )}
+                        {auction.status === "ended" &&
+                            (isOwner || auction.winner_id === auth.user.id) && (
+                                <div className="flex-shrink-0 flex items-center">
+                                    {auction.winner_id === auth.user.id && (
+                                        <div className="relative">
+                                            <Trophy className="absolute h-8 w-8 mr-2 text-yellow-200/70 animate-ping" />
+                                            <Trophy className="h-8 w-8 mr-2 text-yellow-500 " />
+                                        </div>
+                                    )}
+                                    {auction.winner_id ? (
+                                        <div className="relative">
+                                            <Button
+                                                onClick={handleOpenChat}
+                                                disabled={processing}
+                                                className="bg-primary hover:bg-primary/90 pl-3 pr-4"
+                                            >
+                                                <MessageCircle className="h-4 w-4 mr-2" />
+                                                Chat
+                                            </Button>
+
+                                            {/* Notification dot */}
+                                            <span className="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-red-500 rounded-full animate-ping" />
+                                            <span className="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-red-500 rounded-full" />
+                                        </div>
+                                    ) : (
+                                        <Badge
+                                            variant="destructive"
+                                            className="bg-red-50 text-red-700 border-red-200"
+                                        >
+                                            <Users className="h-3 w-3 mr-1" />
+                                            No winner!
+                                        </Badge>
+                                    )}
+                                </div>
+                            )}
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -387,7 +463,14 @@ export default function Show() {
                                         <span className="text-muted-foreground">
                                             Status
                                         </span>
-                                        <Badge variant={statusVariant}>
+                                        <Badge
+                                            variant={statusVariant}
+                                            className={
+                                                auction.status === "live"
+                                                    ? `bg-blue-700 hover:bg-blue-700/80`
+                                                    : ""
+                                            }
+                                        >
                                             {auction.status.toUpperCase()}
                                         </Badge>
                                     </div>
@@ -515,6 +598,33 @@ export default function Show() {
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                                 <AlertDialogAction>OK</AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+
+                    {/* Force End Dialog */}
+                    <AlertDialog
+                        open={showForceEndDialog}
+                        onOpenChange={setShowForceEndDialog}
+                    >
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Warning!</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    Force-ending this auction will finalize the
+                                    sale to the current highest bidder,
+                                    potentially missing out on higher bids. This
+                                    action is permanent and cannot be undone.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                    className="bg-red-600 hover:bg-red-600/90"
+                                    onClick={handleForceEndAuction}
+                                >
+                                    Yes, End it!
+                                </AlertDialogAction>
                             </AlertDialogFooter>
                         </AlertDialogContent>
                     </AlertDialog>

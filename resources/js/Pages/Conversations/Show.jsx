@@ -9,17 +9,16 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
 import { ScrollArea } from "@/Components/ui/scroll-area";
 import { Badge } from "@/Components/ui/badge";
 import { Send, ArrowLeft, Users, Clock, MoreVertical } from "lucide-react";
+import { useEcho } from "@laravel/echo-react";
 
 export default function ConversationsShow({ conversation, user }) {
-    const [chatMessages, setChatMessages] = useState(conversation.messages);
+    const [chatMessages, setChatMessages] = useState(conversation?.messages);
     const messagesEndRef = useRef(null);
     const [isTyping, setIsTyping] = useState(false);
     const auth = user;
     const { data, setData, post, reset } = useForm({
         body: "",
     });
-
-    console.log(conversation);
 
     // Get other participants (excluding current user)
     const otherParticipants =
@@ -36,53 +35,19 @@ export default function ConversationsShow({ conversation, user }) {
         scrollToBottom();
     }, [chatMessages]);
 
-    // Setup Echo listener
-    // useEffect(() => {
-    //     if (!window.Echo) {
-    //         window.Pusher = require("pusher-js");
-    //         window.Echo = new Echo({
-    //             broadcaster: "pusher",
-    //             key: import.meta.env.VITE_PUSHER_APP_KEY,
-    //             cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
-    //             forceTLS: true,
-    //         });
-    //     }
-
-    //     window.Echo.private(`conversations.${conversation.id}`)
-    //         .listen("MessageSent", (e) => {
-    //             setChatMessages((prev) => [...prev, e.message]);
-    //         })
-    //         .listenForWhisper("typing", (e) => {
-    //             setIsTyping(e.typing);
-    //             // Clear typing indicator after 2 seconds
-    //             setTimeout(() => setIsTyping(false), 2000);
-    //         });
-
-    //     return () => {
-    //         window.Echo.leave(`conversations.${conversation.id}`);
-    //     };
-    // }, [conversation.id]);
+    useEcho(`chat.${conversation.id}`, "MessageSent", (e) => {
+        setChatMessages((prev) => [...prev, e.message]);
+    });
 
     // Handle typing indicator
     const handleInputChange = (e) => {
         setData("body", e.target.value);
-
-        // Broadcast typing indicator
-        if (window.Echo) {
-            window.Echo.private(`conversations.${conversation.id}`).whisper(
-                "typing",
-                {
-                    typing: e.target.value.length > 0,
-                    user: auth.name,
-                }
-            );
-        }
     };
 
     // Submit message
     const sendMessage = (e) => {
         e.preventDefault();
-        post(`/conversations/${conversation.id}/messages`, {
+        post(route("chat.store", conversation.id), {
             preserveScroll: true,
             onSuccess: () => {
                 reset("body");
@@ -132,7 +97,12 @@ export default function ConversationsShow({ conversation, user }) {
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <Button variant="ghost" size="icon" asChild>
-                                    <Link href="/conversations">
+                                    <Link
+                                        href={route(
+                                            "auctions.show",
+                                            conversation.auction_id
+                                        )}
+                                    >
                                         <ArrowLeft className="h-5 w-5" />
                                     </Link>
                                 </Button>
@@ -150,7 +120,14 @@ export default function ConversationsShow({ conversation, user }) {
                                                             .name
                                                     }
                                                 />
-                                                <AvatarFallback>
+                                                <AvatarFallback
+                                                    className={
+                                                        conversation.buyer
+                                                            ?.id === auth.id
+                                                            ? "bg-blue-500/60"
+                                                            : "bg-red-500/60"
+                                                    }
+                                                >
                                                     {otherParticipants[0].name
                                                         .charAt(0)
                                                         .toUpperCase()}
@@ -187,7 +164,16 @@ export default function ConversationsShow({ conversation, user }) {
                                                                     participant.name
                                                                 }
                                                             />
-                                                            <AvatarFallback>
+                                                            <AvatarFallback
+                                                                className={
+                                                                    conversation
+                                                                        .buyer
+                                                                        ?.id ===
+                                                                    auth.id
+                                                                        ? "bg-blue-500/60"
+                                                                        : "bg-red-500/60"
+                                                                }
+                                                            >
                                                                 {participant.name
                                                                     .charAt(0)
                                                                     .toUpperCase()}
@@ -198,11 +184,13 @@ export default function ConversationsShow({ conversation, user }) {
                                             </div>
                                             <div>
                                                 <CardTitle className="text-lg">
-                                                    Group Chat
+                                                    {otherParticipants.name}
                                                 </CardTitle>
                                                 <p className="text-sm text-muted-foreground">
-                                                    {otherParticipants?.length}{" "}
-                                                    participants
+                                                    {conversation.buyer?.id ===
+                                                    auth.id
+                                                        ? "Seller"
+                                                        : "Buyer"}
                                                 </p>
                                             </div>
                                         </>
@@ -210,7 +198,7 @@ export default function ConversationsShow({ conversation, user }) {
                                 </div>
                             </div>
                             <Button variant="ghost" size="icon">
-                                <MoreVertical className="h-5 w-5" />
+                                {/* <MoreVertical className="h-5 w-5" /> */}
                             </Button>
                         </div>
                     </CardHeader>
@@ -256,7 +244,16 @@ export default function ConversationsShow({ conversation, user }) {
                                                                     sender?.name
                                                                 }
                                                             />
-                                                            <AvatarFallback>
+                                                            <AvatarFallback
+                                                                className={
+                                                                    conversation
+                                                                        .buyer
+                                                                        ?.id ===
+                                                                    auth.id
+                                                                        ? "bg-blue-500/60"
+                                                                        : "bg-red-500/60"
+                                                                }
+                                                            >
                                                                 {sender?.name
                                                                     ?.charAt(0)
                                                                     .toUpperCase()}
@@ -285,7 +282,7 @@ export default function ConversationsShow({ conversation, user }) {
                                                         }`}
                                                     >
                                                         <p className="text-sm">
-                                                            {msg.body}
+                                                            {msg.content}
                                                         </p>
                                                     </div>
                                                     <p
@@ -300,14 +297,23 @@ export default function ConversationsShow({ conversation, user }) {
                                                         )}
                                                     </p>
                                                 </div>
-                                                {isOwnMessage && (
+                                                {!isOwnMessage && (
                                                     <Avatar className="h-8 w-8 flex-shrink-0">
                                                         <AvatarImage
                                                             src={auth.avatar}
                                                             alt={auth.name}
                                                         />
-                                                        <AvatarFallback>
-                                                            {auth.name
+                                                        <AvatarFallback
+                                                            className={
+                                                                conversation
+                                                                    .buyer
+                                                                    ?.id ===
+                                                                auth.id
+                                                                    ? "bg-blue-500/60"
+                                                                    : "bg-red-500/60"
+                                                            }
+                                                        >
+                                                            {sender?.name
                                                                 .charAt(0)
                                                                 .toUpperCase()}
                                                         </AvatarFallback>

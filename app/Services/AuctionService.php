@@ -90,13 +90,13 @@ class AuctionService
             if ($auction->status !== 'live') {
                 return;
             }
-
-            $auction->status = 'ended';
+            
             $auction->end_time = Carbon::now();
             $auction->save();
 
             // fire event for notifications / jobs
-            event(new AuctionEnded($auction));
+            event(new AuctionEnded($auction));            
+            EndAuctionJob::dispatch($auction->id);
         });
     }
 

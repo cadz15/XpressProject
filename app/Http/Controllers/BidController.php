@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Auction;
 use App\Services\BidService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class BidController extends Controller
 {
+    use AuthorizesRequests;
+    
     protected $service;
 
     public function __construct(BidService $service)
@@ -38,7 +41,7 @@ class BidController extends Controller
      */
     public function store(Request $request, Auction $auction)
     {
-        // $this->authorize('bid', $auction);
+        $this->authorize('bid', $auction);
 
         $validated = $request->validate([
             'amount' => ['required', 'numeric', 'min:0'],

@@ -14,10 +14,19 @@ Broadcast::channel('notification', function ($user) {
  * Private channel for auction events (bids, ended)
  * Name: private-auction.{auctionId}
  */
-Broadcast::private('chat', function ($user) {
-    Log::info('chating');
-    // Only allow authenticated users to listen to this channel
-    return true;
+Broadcast::channel('chat.{conversationId}', function ($user, $conversationId) {
+    $conversation = \App\Models\Conversation::find($conversationId);
+
+    if (!$conversation) {
+        Log::warning("Conversation ID {$conversationId} not found for user ID {$user->id}");
+        return false;
+    }
+   
+    if($user->id == $conversation->seller_id || $user->id == $conversation->buyer_id) {
+        return true;
+    }
+
+    return false;
 });
 
 Broadcast::channel('auction.{auctionId}', function ($user, $auctionId) {

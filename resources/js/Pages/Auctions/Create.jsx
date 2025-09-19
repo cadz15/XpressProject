@@ -35,6 +35,7 @@ export default function Create() {
 
     const [showFileSizeAlert, setShowFileSizeAlert] = useState(false);
     const [showTokenAlert, setShowTokenAlert] = useState(false);
+    const [tokenError, setTokenError] = useState("");
 
     const { data, setData, post, processing, errors } = useForm({
         title: "",
@@ -113,7 +114,8 @@ export default function Create() {
             forceFormData: true, // ensures file uploads work
             onSuccess: (response) => {},
             onError: (error) => {
-                if (error[0] === "You need at least 1 tokens.") {
+                if (error[0].includes("You need at least")) {
+                    setTokenError(error[0].replace(".", ""));
                     setShowTokenAlert(true);
                 }
             },
@@ -438,8 +440,8 @@ export default function Create() {
                             Insufficient Tokens
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                            You need at least 1 token to create an auction.
-                            Please purchase tokens first.
+                            {tokenError} to create an auction. Please purchase
+                            tokens first.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

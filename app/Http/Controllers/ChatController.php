@@ -4,12 +4,16 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Auction;
+use App\Models\Conversation;
 use App\Models\Message;
 use App\Services\MessageService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 
 class ChatController extends Controller
 {
+    use AuthorizesRequests;
+    
     protected $service;
 
     public function __construct(MessageService $service)
@@ -22,10 +26,12 @@ class ChatController extends Controller
      */
     public function show(Auction $auction)
     {
-        // $this->authorizeChat($auction);
+        $this->authorize('chat', $auction);
 
-        $conversation = $auction->conversations()->with('messages', 'seller', 'buyer')->latest()->first();
+        $conversation = Conversation::where('auction_id', $auction->id)->with('seller', 'buyer', 'messages')->first();
         
+        if(!$conversation) return abort(404);
+
         return inertia('Conversations/Show', [
             'auction'  => $auction,
             'conversation' => $conversation,
@@ -36,32 +42,19 @@ class ChatController extends Controller
     /**
      * Send a new message in the chat.
      */
-    public function store(Request $request, Auction $auction)
+    public function store(Request $request, Conversation $conversation)
     {
-        $this->authorizeChat($auction);
+        $auction = Auction::where('id', $conversation->auction_id)->first();
+        
+        $this->authorize('chat', $auction);
 
         $validated = $request->validate([
-            'content' => 'required|string|max:1000',
+            'body' => 'required|string|max:1000',
         ]);
-
-        $message = $this->service->sendMessage(Auth::user(), $auction, $validated['content']);
+        
+        $message = $this->service->sendMessage(Auth::user(), $conversation, $validated['body']);
 
         return back()->with('success', 'Message sent.');
     }
 
-    /**
-     * Ensure only seller and winner can chat.
-     */
-    protected function authorizeChat(Auction $auction)
-    {
-        $user = Auth::user();
-
-        if ($auction->status !== 'ended') {
-            abort(403, 'Chat is only available after auction ends.');
-        }
-
-        if (! in_array($user->id, [$auction->seller_id, $auction->highest_bidder_id])) {
-            abort(403, 'You are not authorized to access this chat.');
-        }
-    }
 }

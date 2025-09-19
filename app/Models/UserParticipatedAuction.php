@@ -11,6 +11,10 @@ class UserParticipatedAuction extends Model
     
     protected $guarded = ['id', 'created_at', 'updated_at'];
 
+    public function user()
+    {
+        return $this->hasOne(User::class);
+    }
 
     public function auction()
     {

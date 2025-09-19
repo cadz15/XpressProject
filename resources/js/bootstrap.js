@@ -2,6 +2,7 @@ import { configureEcho } from "@laravel/echo-react";
 import axios from "axios";
 import Echo from "laravel-echo";
 import Pusher from "pusher-js";
+import { io } from "socket.io-client";
 
 window.axios = axios;
 
@@ -12,7 +13,6 @@ window.axios.defaults.headers.common["'X-CSRF-TOKEN'"] = document
 
 // expose for debugging
 window.Pusher = Pusher;
-
 configureEcho({
     broadcaster: "reverb",
     // forceTLS: true,

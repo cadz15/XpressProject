@@ -1,6 +1,6 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import React from "react";
-import { router } from "@inertiajs/react";
+import { Head, router } from "@inertiajs/react";
 import { Button } from "@/Components/ui/button";
 import {
     Card,
@@ -75,6 +75,7 @@ export default function HistoryList({ ledger, balance }) {
 
     return (
         <AuthenticatedLayout>
+            <Head title="Token History" />
             <div className="container max-w-6xl py-8 space-y-6">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">

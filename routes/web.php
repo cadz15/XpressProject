@@ -19,7 +19,6 @@ use App\Jobs\EndAuctionJob;
 use App\Models\Auction;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
-use Pusher\Pusher;
 
 Route::middleware(['auth', 'active.subscriber'])->group(function () {
 
@@ -44,6 +43,9 @@ Route::middleware(['auth', 'active.subscriber'])->group(function () {
 
     Route::post('/auctions/{auction}/force-end', [AuctionController::class, 'forceEnd'])
         ->name('auctions.forceEnd');
+
+    Route::post('/auctions/{auction}/force-start', [AuctionController::class, 'forceStart'])
+        ->name('auctions.forceStart');
 
     // Participation (requires token payment)
     Route::post('/auctions/{auction}/participate', [AuctionParticipationController::class, 'store'])

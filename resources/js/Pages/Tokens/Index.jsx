@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { router } from "@inertiajs/react";
+import { Head, router } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Button } from "@/Components/ui/button";
 import {
@@ -82,6 +82,7 @@ export default function Index({ bundles }) {
 
     return (
         <AuthenticatedLayout>
+            <Head title="Buy Tokens" />
             <div className="flex justify-center">
                 <div className="container max-w-6xl py-8 space-y-8">
                     {/* Header */}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useForm, Link } from "@inertiajs/react";
+import { useForm, Link, Head } from "@inertiajs/react";
 import Echo from "laravel-echo";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Button } from "@/Components/ui/button";
@@ -90,6 +90,7 @@ export default function ConversationsShow({ conversation, user }) {
 
     return (
         <AuthenticatedLayout>
+            <Head title="Chat" />
             <div className="max-w-4xl mx-auto h-[calc(100vh-100px)] flex flex-col">
                 {/* Header */}
                 <Card className="border-0 shadow-none rounded-none rounded-t-lg">

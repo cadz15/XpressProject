@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { router } from "@inertiajs/react";
+import { Head, router } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Button } from "@/Components/ui/button";
 import {
@@ -92,6 +92,7 @@ export default function Index({ plans, user, activeSubscription }) {
 
     return (
         <AuthenticatedLayout>
+            <Head title="Subscription" />
             <div className="flex justify-center">
                 <div className="container max-w-6xl py-8 space-y-8">
                     {/* Header */}

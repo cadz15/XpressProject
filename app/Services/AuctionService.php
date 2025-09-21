@@ -100,6 +100,26 @@ class AuctionService
         });
     }
 
+    public function forceStart(Auction $auction): void
+    {
+        DB::transaction(function () use ($auction) {
+            if ($auction->status !== 'pending') {
+                return;
+            }
+
+            if(now()->lessThan($auction->end_time)) {
+                
+                $auction->start_time = Carbon::now();
+                $auction->save();
+    
+                StartAuctionJob::dispatch($auction->id);
+            }else {
+                EndAuctionJob::dispatch(($auction->id));
+            }
+            
+        });
+    }
+
     /**
      * Called by scheduler or job when time expires.
      */

@@ -11,7 +11,8 @@ class EnsureActiveSubscription
     {
         $user = $request->user();
         
-        if (! $user || ! $user->activeSubscription()) {
+        
+        if (! $user || (! $user->activeSubscription() && !$user->is_admin)) {
             return redirect()->route('subscription.index')
                 ->withErrors('You must have an active subscription.');
         }

@@ -140,6 +140,19 @@ class AuctionController extends Controller
             ->with('success', 'Auction was force-ended.');
     }
 
+    /**
+     * Force end an auction early (seller or admin only).
+     */
+    public function forceStart(Auction $auction)
+    {
+        $this->authorize('update', $auction);
+
+        $this->service->forceStart($auction);
+
+        return redirect()->route('auctions.show', $auction->id)
+            ->with('success', 'Auction was force-started.');
+    }
+
      /**
      * Show the edit form.
      */

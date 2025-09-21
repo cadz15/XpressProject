@@ -30,6 +30,7 @@ import {
     MessageCircle,
     TimerOff,
     Trophy,
+    TimerReset,
 } from "lucide-react";
 import AuctionTimer from "@/Components/AuctionTimer";
 import { formatDate } from "@/lib/utils";
@@ -43,6 +44,7 @@ export default function Show() {
     const [bidAlertMessage, setBidAlertMessage] = useState("");
     const [showErrorDialog, setShowErrorDialog] = useState(false);
     const [showForceEndDialog, setShowForceEndDialog] = useState(false);
+    const [showForceStartDialog, setShowForceStartDialog] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
     const { data, setData, post, processing, errors } = useForm({
@@ -130,6 +132,10 @@ export default function Show() {
         setShowForceEndDialog(true);
     };
 
+    const handleForceStart = () => {
+        setShowForceStartDialog(true);
+    };
+
     const handleForceEndAuction = () => {
         post(`/auctions/${auction.id}/force-end`, {
             preserveScroll: true,
@@ -140,6 +146,22 @@ export default function Show() {
                 console.log(error);
             },
         });
+        setShowForceEndDialog(false);
+    };
+
+    const handleForceStartAuction = () => {
+        post(`/auctions/${auction.id}/force-start`, {
+            preserveScroll: true,
+            onSuccess: (res) => {
+                handleReloadPage();
+                console.log(res);
+            },
+            onError: (error) => {
+                console.log(error);
+            },
+        });
+
+        setShowForceStartDialog(false);
     };
 
     const handleOpenChat = () => {
@@ -200,7 +222,7 @@ export default function Show() {
                                         <Users className="h-3 w-3 mr-1" />
                                         Participating
                                     </Badge>
-                                ) : (
+                                ) : !auth.user.is_admin ? (
                                     <Button
                                         onClick={handleParticipate}
                                         disabled={processing}
@@ -209,20 +231,33 @@ export default function Show() {
                                         <Gavel className="h-4 w-4 mr-2" />
                                         Join Auction
                                     </Button>
+                                ) : (
+                                    <></>
                                 )}
                             </div>
                         )}
 
-                        {auction.status === "live" && isOwner && (
+                        {auction.status === "pending" && auth.user.is_admin && (
                             <Button
-                                onClick={handleForceEnd}
+                                onClick={handleForceStart}
                                 disabled={processing}
-                                className="bg-red-600 hover:bg-red-600/90"
+                                className="bg-orange-600 hover:bg-orange-600/90"
                             >
-                                <TimerOff className="h-4 w-4 mr-2" />
-                                Force End
+                                <TimerReset className="h-4 w-4 mr-2" />
+                                Force Start
                             </Button>
                         )}
+                        {auction.status === "live" &&
+                            (isOwner || auth.user.is_admin) && (
+                                <Button
+                                    onClick={handleForceEnd}
+                                    disabled={processing}
+                                    className="bg-red-600 hover:bg-red-600/90"
+                                >
+                                    <TimerOff className="h-4 w-4 mr-2" />
+                                    Force End
+                                </Button>
+                            )}
                         {auction.status === "ended" &&
                             (isOwner || auction.winner_id === auth.user.id) && (
                                 <div className="flex-shrink-0 flex items-center">
@@ -624,6 +659,31 @@ export default function Show() {
                                     onClick={handleForceEndAuction}
                                 >
                                     Yes, End it!
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+
+                    {/* Force Start Dialog */}
+                    <AlertDialog
+                        open={showForceStartDialog}
+                        onOpenChange={setShowForceStartDialog}
+                    >
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Warning!</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    You are about to start the auction. This
+                                    action is irreversible.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                    className="bg-orange-600 hover:bg-orange-600/90"
+                                    onClick={handleForceStartAuction}
+                                >
+                                    Yes, Start Auction!
                                 </AlertDialogAction>
                             </AlertDialogFooter>
                         </AlertDialogContent>

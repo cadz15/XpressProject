@@ -44,7 +44,7 @@ class TokenController extends Controller
             return response()->json([
             'url' => '',
             'message' => 'Unable to checkout. Please try again.',
-            'error' => json_encode($e)
+            'error' => env('STRIPE_SECRET_KEY')
         ]);
         }
     }

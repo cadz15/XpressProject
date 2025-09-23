@@ -281,14 +281,14 @@ export default function Register() {
                             <div className="text-xs text-muted-foreground text-center">
                                 By creating an account, you agree to our{" "}
                                 <Link
-                                    href="#"
+                                    href={route("terms")}
                                     className="text-primary hover:underline"
                                 >
                                     Terms of Service
                                 </Link>{" "}
                                 and{" "}
                                 <Link
-                                    href="#"
+                                    href={route("privacy")}
                                     className="text-primary hover:underline"
                                 >
                                     Privacy Policy

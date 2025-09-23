@@ -7,9 +7,9 @@ import {
     CardDescription,
     CardHeader,
     CardTitle,
-} from "@/components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
+} from "@/Components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/Components/ui/alert";
+import { Badge } from "@/Components/ui/badge";
 import {
     CheckCircle,
     FileText,

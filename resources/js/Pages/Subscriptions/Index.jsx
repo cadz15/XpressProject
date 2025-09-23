@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import { router } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/Components/ui/button";
 import {
     Card,
     CardContent,
     CardFooter,
     CardHeader,
     CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+} from "@/Components/ui/card";
+import { Badge } from "@/Components/ui/badge";
+import { Alert, AlertDescription, AlertTitle } from "@/Components/ui/alert";
 import {
     Dialog,
     DialogContent,
@@ -19,7 +19,7 @@ import {
     DialogTitle,
     DialogFooter,
     DialogClose,
-} from "@/components/ui/dialog";
+} from "@/Components/ui/dialog";
 import { Loader2, Crown, Zap, Star, Check, X, CreditCard } from "lucide-react";
 
 export default function SubscriptionIndex({ plans, activeSubscription }) {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/Components/ui/button";
+import { Card, CardContent } from "@/Components/ui/card";
+import { Badge } from "@/Components/ui/badge";
 import { ArrowRight, Star, ChevronRight, ChevronLeft } from "lucide-react";
 import { Head, Link } from "@inertiajs/react";
 import Logo from "@/images/logo.png";
@@ -10,7 +10,7 @@ import ArtImage from "@/images/arts.webp";
 import AntiqueImage from "@/images/antiques.jpg";
 import WatchImage from "@/images/watches.jpeg";
 import HeroImage from "@/images/hero.png";
-import Footer from "@/components/Footer";
+import Footer from "@/Components/Footer";
 
 // Mock data
 const featuredAuctions = [

@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Head, router, useForm, usePage } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { useEcho } from "@laravel/echo-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/Components/ui/button";
+import { Input } from "@/Components/ui/input";
+import { Label } from "@/Components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
+import { Badge } from "@/Components/ui/badge";
+import { Alert, AlertDescription, AlertTitle } from "@/Components/ui/alert";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -17,7 +17,7 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from "@/Components/ui/alert-dialog";
 import {
     ChevronLeft,
     ChevronRight,
@@ -32,7 +32,7 @@ import {
     Trophy,
     TimerReset,
 } from "lucide-react";
-import AuctionTimer from "@/components/AuctionTimer";
+import AuctionTimer from "@/Components/AuctionTimer";
 import { formatDate } from "@/lib/utils";
 
 export default function Show() {

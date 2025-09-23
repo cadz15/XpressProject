@@ -2,7 +2,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Head, usePage } from "@inertiajs/react";
 import axios from "axios";
-import Echo from "../../bootstrap"; // ensures Echo is initialized
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 
 export default function Show({ auction: initialAuction }) {

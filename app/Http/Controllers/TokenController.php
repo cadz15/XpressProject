@@ -43,7 +43,8 @@ class TokenController extends Controller
         } catch (\Exception $e) {
             return response()->json([
             'url' => '',
-            'message' => 'Unable to checkout. Please try again.'
+            'message' => 'Unable to checkout. Please try again.',
+            'error' => json_encode($e)
         ]);
         }
     }

@@ -2,12 +2,12 @@ import React, { useEffect, useState, useRef } from "react";
 import { useForm, Link, Head } from "@inertiajs/react";
 import Echo from "laravel-echo";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Button } from "@/Components/ui/button";
-import { Input } from "@/Components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
-import { ScrollArea } from "@/Components/ui/scroll-area";
-import { Badge } from "@/Components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
 import { Send, ArrowLeft, Users, Clock, MoreVertical } from "lucide-react";
 import { useEcho } from "@laravel/echo-react";
 

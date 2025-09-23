@@ -1,11 +1,11 @@
-import ApplicationLogo from "@/Components/ApplicationLogo";
-import Dropdown from "@/Components/Dropdown";
-import NavLink from "@/Components/NavLink";
-import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
+import ApplicationLogo from "@/components/ApplicationLogo";
+import Dropdown from "@/components/Dropdown";
+import NavLink from "@/components/NavLink";
+import ResponsiveNavLink from "@/components/ResponsiveNavLink";
 import { Link, usePage } from "@inertiajs/react";
 import { useState } from "react";
-import { Button } from "@/Components/ui/button";
-import { Badge } from "@/Components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -13,14 +13,14 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "@/Components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import {
     Sheet,
     SheetContent,
     SheetHeader,
     SheetTitle,
     SheetTrigger,
-} from "@/Components/ui/sheet";
+} from "@/components/ui/sheet";
 import {
     Coins,
     FileClock,
@@ -35,7 +35,7 @@ import {
 } from "lucide-react";
 
 import Logo from "@/images/logo.png";
-import Footer from "@/Components/Footer";
+import Footer from "@/components/Footer";
 
 export default function AuthenticatedLayout({ header, children }) {
     const { auth } = usePage().props;

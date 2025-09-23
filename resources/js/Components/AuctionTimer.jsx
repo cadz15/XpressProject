@@ -5,9 +5,9 @@ import {
     CardDescription,
     CardHeader,
     CardTitle,
-} from "@/Components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/Components/ui/alert";
-import { Badge } from "@/Components/ui/badge";
+} from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { Clock, AlertCircle, CheckCircle2, Zap } from "lucide-react";
 
 const AuctionTimer = ({ serverEndTime, onEndTime }) => {

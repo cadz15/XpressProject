@@ -1,7 +1,7 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { usePage, Link, router, Head } from "@inertiajs/react";
 import React from "react";
-import { Button } from "@/Components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
     Card,
     CardContent,
@@ -9,9 +9,9 @@ import {
     CardFooter,
     CardHeader,
     CardTitle,
-} from "@/Components/ui/card";
-import { Badge } from "@/Components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs";
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
     Pagination,
     PaginationContent,
@@ -19,7 +19,7 @@ import {
     PaginationLink,
     PaginationNext,
     PaginationPrevious,
-} from "@/Components/ui/pagination";
+} from "@/components/ui/pagination";
 import {
     Gavel,
     Crown,

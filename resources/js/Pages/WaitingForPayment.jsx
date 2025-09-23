@@ -7,10 +7,10 @@ import {
     CardDescription,
     CardHeader,
     CardTitle,
-} from "@/Components/ui/card";
-import { Button } from "@/Components/ui/button";
-import { Alert, AlertDescription, AlertTitle } from "@/Components/ui/alert";
-import { Badge } from "@/Components/ui/badge";
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import {
     Loader2,
     CheckCircle2,

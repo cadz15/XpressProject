@@ -10,7 +10,7 @@ import ArtImage from "@/images/arts.webp";
 import AntiqueImage from "@/images/antiques.jpg";
 import WatchImage from "@/images/watches.jpeg";
 import HeroImage from "@/images/hero.png";
-import Footer from "@/Components/Footer";
+import Footer from "@/components/Footer";
 
 // Mock data
 const featuredAuctions = [

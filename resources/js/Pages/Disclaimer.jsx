@@ -7,8 +7,8 @@ import {
     CardDescription,
     CardHeader,
     CardTitle,
-} from "@/Components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/Components/ui/alert";
+} from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Shield, AlertTriangle, FileText, Scale, Globe } from "lucide-react";
 
 function Disclaimer() {

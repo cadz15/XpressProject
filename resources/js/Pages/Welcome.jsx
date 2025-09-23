@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Star } from "lucide-react";
+import { ArrowRight, Star, ChevronRight, ChevronLeft } from "lucide-react";
 import { Head, Link } from "@inertiajs/react";
 import Logo from "@/images/logo.png";
 import JewelryImage from "@/images/jewelry.jpg";
@@ -78,6 +78,18 @@ const testimonials = [
     },
 ];
 
+// Marquee Images - You can replace these with actual auction item images
+const marqueeImages = [
+    "https://images.unsplash.com/photo-1520468164108-7f393c152c59?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&fit=crop", // Art
+    "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=300&h=200&fit=crop", // Jewelry
+    "https://images.unsplash.com/photo-1609587312208-cea54be969e7?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&fit=crop", // Watches
+    "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=200&fit=crop", // Furniture
+    "https://images.unsplash.com/photo-1607310073276-9f48dec47340?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D=crop", // Collectibles
+    "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=300&h=200&fit=crop", // Antiques
+    "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=300&h=200&fit=crop", // Electronics
+    "https://plus.unsplash.com/premium_photo-1664303847960-586318f59035?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&fit=crop", // Luxury
+];
+
 // Navbar Component
 function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -88,11 +100,15 @@ function Navbar() {
                 <div className="flex justify-between h-16">
                     <div className="flex items-center">
                         <div className="flex-shrink-0 flex items-center">
-                            <Link href="/">
+                            <Link href="/" className="flex items-center">
                                 <img
                                     src={Logo}
                                     className="block h-16 w-auto fill-current text-foreground"
+                                    alt="XpressProject"
                                 />
+                                <span className="pl-2 font-bold text-lg">
+                                    XpressProject
+                                </span>
                             </Link>
                         </div>
                     </div>
@@ -111,6 +127,64 @@ function Navbar() {
                 </div>
             </div>
         </nav>
+    );
+}
+
+// Infinite Marquee Component
+function InfiniteMarquee() {
+    const marqueeRef = useRef(null);
+
+    useEffect(() => {
+        const marquee = marqueeRef.current;
+        if (!marquee) return;
+
+        // Duplicate the content for seamless looping
+        const content = marquee.innerHTML;
+        marquee.innerHTML = content + content + content;
+
+        // Animate the marquee
+        let animationId;
+        const animate = () => {
+            if (marquee.scrollLeft >= marquee.scrollWidth / 3) {
+                marquee.scrollLeft = 0;
+            }
+            marquee.scrollLeft += 1;
+            animationId = requestAnimationFrame(animate);
+        };
+
+        animate();
+
+        return () => {
+            cancelAnimationFrame(animationId);
+        };
+    }, []);
+
+    return (
+        <div className="relative h-full w-full overflow-hidden rounded shadow-2xl">
+            {/* Gradient overlays for better visual effect */}
+            <div className="absolute left-0 top-0 h-full w-12 bg-gradient-to-r from-gray-50 to-transparent z-10" />
+            <div className="absolute right-0 top-0 h-full w-12 bg-gradient-to-l from-gray-50 to-transparent z-10" />
+
+            <div
+                ref={marqueeRef}
+                className="flex h-full space-x-4 overflow-x-auto scrollbar-hide"
+                style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            >
+                {marqueeImages.map((image, index) => (
+                    <div
+                        key={index}
+                        className="flex-shrink-0  relative group cursor-pointer transform transition-all duration-300 hover:scale-105"
+                    >
+                        <img
+                            src={image}
+                            alt={`Auction item ${index + 1}`}
+                            className="rounded-lg shadow-md"
+                        />
+                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 rounded-lg" />
+                    </div>
+                ))}
+            </div>
+        </div>
     );
 }
 
@@ -145,12 +219,15 @@ function HeroSection() {
     }, []);
 
     return (
-        <div
-            id="vanta-bg"
-            className="hero-gradient py-20 px-4 sm:px-6 lg:px-8 "
-        >
-            <div className="max-w-7xl mx-auto">
+        <div className="hero-gradient py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+            {/* Background pattern */}
+            <div className="absolute inset-0 opacity-5">
+                <div className="absolute inset-0 bg-gradient-to-r from-indigo-100 to-purple-100" />
+            </div>
+
+            <div className="max-w-7xl mx-auto relative z-10">
                 <div className="lg:grid lg:grid-cols-12 lg:gap-8 py-12">
+                    {/* Left Content */}
                     <div className="px-4 sm:px-0 sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left lg:flex lg:items-center">
                         <div data-aos="fade-right">
                             <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl pb-6">
@@ -161,25 +238,36 @@ function HeroSection() {
                                     Bid & win treasures
                                 </span>
                             </h1>
-                            <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0 pb-8">
+                            <p className="mt-3 text-base text-gray-600 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0 pb-8">
                                 Join thousands of collectors and enthusiasts in
                                 our exclusive auctions. From art to antiques,
                                 find what speaks to you.
                             </p>
-                            <div className="mt-10 sm:flex sm:justify-center lg:justify-start">
-                                <Link href={route("login")}>
-                                    <Button className="px-8 py-3 text-base font-medium md:py-4 md:text-lg md:px-10">
+
+                            <div className="mt-10 sm:flex sm:justify-center lg:justify-start space-y-4 sm:space-y-0 sm:space-x-4">
+                                <Link href={route("register")}>
+                                    <Button className="px-8 py-3 text-base font-medium md:py-4 md:text-lg md:px-10 bg-indigo-600 hover:bg-indigo-700">
+                                        Start Bidding
+                                    </Button>
+                                </Link>
+                                <Link href={route("auctions.index")}>
+                                    <Button
+                                        variant="outline"
+                                        className="px-8 py-3 text-base font-medium md:py-4 md:text-lg md:px-10"
+                                    >
                                         Explore Auctions
                                     </Button>
                                 </Link>
                             </div>
                         </div>
                     </div>
+
+                    {/* Right Content - Infinite Marquee */}
                     <div
-                        className="mt-12 relative h-full sm:max-w-lg sm:mx-auto lg:mt-0 lg:max-w-none lg:mx-0 lg:col-span-6 lg:flex lg:items-center"
+                        className="mt-12 relative h-96 sm:max-w-lg sm:mx-auto lg:mt-0 lg:max-w-none lg:mx-0 lg:col-span-6 lg:flex lg:items-center"
                         data-aos="fade-left"
                     >
-                        <img src={HeroImage}></img>
+                        <InfiniteMarquee />
                     </div>
                 </div>
             </div>
@@ -509,7 +597,7 @@ export default function BidHiveApp() {
     return (
         <div className="bg-gray-50 min-h-screen">
             <Head title="Welcome" />
-            <style global>{`
+            <style global jsx>{`
                 .hero-gradient {
                     background: linear-gradient(
                         135deg,
@@ -524,6 +612,13 @@ export default function BidHiveApp() {
                 }
                 .countdown-timer {
                     font-family: monospace;
+                }
+                .scrollbar-hide {
+                    -ms-overflow-style: none;
+                    scrollbar-width: none;
+                }
+                .scrollbar-hide::-webkit-scrollbar {
+                    display: none;
                 }
             `}</style>
 

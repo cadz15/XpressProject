@@ -15,14 +15,20 @@ use App\Http\Controllers\Admin\TokenBundleController;
 use App\Http\Controllers\Admin\SubscriptionPlanController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SiteController;
 use App\Jobs\EndAuctionJob;
 use App\Models\Auction;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
+Route::get('/', [SiteController::class, 'index'])->middleware('guest')->name('home');
+Route::get('/privacy-policy', [SiteController::class, 'privacy'])->name('privacy');
+Route::get('/disclaimer', [SiteController::class, 'disclaimer'])->name('disclaimer');
+Route::get('/terms-of-use', [SiteController::class, 'terms'])->name('terms');
+
 Route::middleware(['auth', 'active.subscriber'])->group(function () {
 
-    Route::get('/', function() {
+    Route::get('/dashboard', function() {
         return redirect()->intended(Auth::user()->is_admin ? route('admin.dashboard') : route('auctions.index'));
     })->name('dashboard');
 

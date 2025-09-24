@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { router, usePage } from "@inertiajs/react";
+import { Head, router, usePage } from "@inertiajs/react";
 import { useEcho } from "@laravel/echo-react";
 import {
     Card,
@@ -69,6 +69,7 @@ const WaitingForPayment = ({ subscriptionId }) => {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4 animate-fade-in">
+            <Head title="Payment Verification" />
             <Card className="w-full max-w-md shadow-xl border-0">
                 <CardHeader className="text-center space-y-4">
                     <div className="flex justify-center">

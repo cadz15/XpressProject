@@ -32,6 +32,7 @@ import {
     User,
     Gavel,
     X,
+    Settings,
 } from "lucide-react";
 
 import Logo from "@/images/logo.png";
@@ -169,6 +170,18 @@ export default function AuthenticatedLayout({ header, children }) {
                                                 <span>Subscription</span>
                                             </Link>
                                         </DropdownMenuItem>
+                                        <DropdownMenuItem asChild>
+                                            <Link
+                                                href={route(
+                                                    "profiles.show",
+                                                    user.id
+                                                )}
+                                                className="flex items-center gap-2"
+                                            >
+                                                <Settings className="h-4 w-4" />
+                                                User Setting
+                                            </Link>
+                                        </DropdownMenuItem>
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem asChild>
                                             <Link
@@ -295,6 +308,16 @@ export default function AuthenticatedLayout({ header, children }) {
                                                     <Crown className="h-4 w-4" />
                                                     Subscription
                                                 </ResponsiveNavLink>
+                                                <ResponsiveNavLink
+                                                    href={route(
+                                                        "profiles.show",
+                                                        user.id
+                                                    )}
+                                                    className="flex items-center gap-2"
+                                                >
+                                                    <Settings className="h-4 w-4" />
+                                                    User Setting
+                                                </ResponsiveNavLink>
                                             </div>
 
                                             {/* Logout */}
@@ -327,7 +350,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                     </Link>
                                 </div>
                             </div>
-                            <div className="hidden sm:ml-6 sm:flex sm:items-center">
+                            <div className=" sm:ml-6 flex sm:items-center">
                                 <div className="ml-3 relative">
                                     <Link href={route("login")}>
                                         <Button
@@ -338,7 +361,10 @@ export default function AuthenticatedLayout({ header, children }) {
                                         </Button>
                                     </Link>
                                 </div>
-                                <Link href={route("register")}>
+                                <Link
+                                    href={route("register")}
+                                    className="hidden sm:block"
+                                >
                                     <Button className="ml-4">Sign Up</Button>
                                 </Link>
                             </div>

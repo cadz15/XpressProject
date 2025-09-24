@@ -77,7 +77,7 @@ Route::middleware(['auth', 'active.subscriber'])->group(function () {
     Route::post('/subscriptions/cancel', [SubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
 
     // Profiles (subscribers only)
-    Route::get('/profiles/{username}', [ProfileController::class, 'show'])->name('profiles.show');
+    Route::get('/profiles/{id}', [ProfileController::class, 'show'])->name('profiles.show');
 
 });
 

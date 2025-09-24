@@ -15,7 +15,7 @@ window.axios.defaults.headers.common["'X-CSRF-TOKEN'"] = document
 window.Pusher = Pusher;
 configureEcho({
     broadcaster: "reverb",
-    // forceTLS: true,
+    forceTLS: true,
     auth: {
         headers: {
             "X-CSRF-TOKEN": document
